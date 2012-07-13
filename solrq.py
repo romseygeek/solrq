@@ -8,6 +8,11 @@ Connection options:
     -t <path>, --path <path>              path to solr server [default: solr/]
     --url <url>                           complete url to solr server
 
+Search options:
+    --filter <filter>                     filter query
+    --phrase <phrase>                     phrase filter (for dismax query handlers)
+    --boost <boost>                       boost query
+
 Output options:
     -c, --count                           print the number of matching docs
     -f <fields>, --fields <fields>        comma-delimited list of fields to display [default: *,score]
@@ -27,6 +32,12 @@ def build_http_query(options, query):
     url = options['--url'] or "http://%(--host)s:%(--port)s/%(--path)s" % options
     url += "/select"
     params = { 'q' : query, 'wt' : 'json', 'fl' : options['--fields'] }
+    if options['--filter']:
+        params['fq'] = options['--filter']
+    if options['--phrase']:
+        params['pf'] = options['--phrase']
+    if options['--boost']:
+        params['bq'] = options['--boost']
     return url, params
 
 def format_results(options, solrresponse):
